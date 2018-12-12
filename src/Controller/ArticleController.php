@@ -4,19 +4,20 @@ namespace App\Controller;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Psr\Log\LoggerInterface;
 
 class ArticleController extends AbstractController
 {
     /**
-     * @Route("/")
+     * @Route("/", name="app_homepage")
      */
     public function homepage()
     {
-        return new Response('First page');
+        return $this->render('articles/homepage.html.twig');
     }
     
     /**
-     * @Route("/news/{slug}")
+     * @Route("/news/{slug}", name="article_show")
      */
     public function show($slug)
     {
@@ -27,7 +28,19 @@ class ArticleController extends AbstractController
         ];
         return $this->render('articles/show.html.twig', [
             'title' => ucwords(str_replace("-", " ",$slug)),
+            'slug' => $slug,
             'comments' => $comments
         ]);
+    }
+
+    /**
+     * @Route("/news/{slug}/heart", name="article_toggle_heart", methods={"POST"})
+     */
+    public function toggleArticleHeart($slug, LoggerInterface $logger)
+    {
+        $logger->info("Article $slug being hearted");
+
+        #TODO - actually heart/unheart the article
+        return $this->json(['hearts'=> rand(5, 100)]);
     }
 }
