@@ -5,8 +5,7 @@ use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Psr\Log\LoggerInterface;
-use Knp\Bundle\MarkdownBundle\MarkdownParserInterface;
-use Symfony\Component\Cache\Adapter\AdapterInterface;
+use App\Service\MarkdownHelper;
 
 class ArticleController extends AbstractController
 {
@@ -21,7 +20,7 @@ class ArticleController extends AbstractController
     /**
      * @Route("/news/{slug}", name="article_show")
      */
-    public function show($slug, MarkdownParserInterface $parser, AdapterInterface $cache)
+    public function show($slug, MarkdownHelper $markdownHelper)
     {
         $comments = [
             'Comment line 1',
@@ -39,12 +38,8 @@ Sausage tenderloin officia jerky nostrud. Laborum elit pastrami non, pig kevin b
 
 Do mollit deserunt **prosciutto** laborum. Duis sint tongue quis nisi. Capicola qui beef ribs dolore pariatur. Minim strip steak fugiat nisi est, meatloaf pig aute. Swine rump turducken nulla sausage. Reprehenderit pork belly tongue alcatra, shoulder excepteur in beef bresaola duis ham bacon eiusmod. Doner drumstick short loin, adipisicing cow cillum tenderloin.
 EOF;
-        $item = $cache->getItem('markdown_'.md5($articleContent));
-        if (!$item->isHit()) {
-            $item->set($parser->transformMarkdown($articleContent));
-            $cache->save($item);
-        }
-        $articleContent = $item->get();
+
+        $articleContent = $markdownHelper->parse($articleContent);
 
         return $this->render('articles/show.html.twig', [
             'title' => ucwords(str_replace("-", " ",$slug)),
