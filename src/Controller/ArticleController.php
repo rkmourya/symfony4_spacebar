@@ -6,9 +6,19 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Psr\Log\LoggerInterface;
 use App\Service\MarkdownHelper;
+use Nexy\Slack\Client;
 
 class ArticleController extends AbstractController
 {
+    private $isDebug;
+    private $slack;
+
+    public function __construct(bool $isDebug, Client $slack)
+    {
+        $this->isDebug = $isDebug;
+        $this->slack = $slack;
+    }
+
     /**
      * @Route("/", name="app_homepage")
      */
@@ -16,12 +26,20 @@ class ArticleController extends AbstractController
     {
         return $this->render('articles/homepage.html.twig');
     }
-    
+
     /**
      * @Route("/news/{slug}", name="article_show")
      */
     public function show($slug, MarkdownHelper $markdownHelper)
     {
+        if ($slug === 'khaaaaaan') {
+            $message = $this->slack->createMessage()
+                ->from('Khan')
+                ->withIcon(':ghost:')
+                ->setText('Ah, Kirk, my old friend...');
+            $this->slack->sendMessage($message);
+        }
+
         $comments = [
             'Comment line 1',
             'Comment line 2',
@@ -42,7 +60,7 @@ EOF;
         $articleContent = $markdownHelper->parse($articleContent);
 
         return $this->render('articles/show.html.twig', [
-            'title' => ucwords(str_replace("-", " ",$slug)),
+            'title' => ucwords(str_replace("-", " ", $slug)),
             'articleContent' => $articleContent,
             'slug' => $slug,
             'comments' => $comments
