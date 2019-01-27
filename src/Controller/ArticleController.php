@@ -3,8 +3,6 @@ namespace App\Controller;
 
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Psr\Log\LoggerInterface;
-use App\Service\MarkdownHelper;
 use App\Service\SlackClient;
 use App\Entity\Article;
 use App\Repository\ArticleRepository;
@@ -53,11 +51,10 @@ class ArticleController extends AbstractController
     /**
      * @Route("/news/{slug}/heart", name="article_toggle_heart", methods={"POST"})
      */
-    public function toggleArticleHeart($slug, LoggerInterface $logger)
+    public function toggleArticleHeart(Article $article)
     {
-        $logger->info("Article $slug being hearted");
+        $article->incrementHeartCount();
 
-        #TODO - actually heart/unheart the article
-        return $this->json(['hearts'=> rand(5, 100)]);
+        return $this->json(['hearts'=> $article->getHeartCount()]);
     }
 }
