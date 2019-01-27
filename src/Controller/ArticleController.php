@@ -2,13 +2,12 @@
 namespace App\Controller;
 
 use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Component\HttpFoundation\Response;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Psr\Log\LoggerInterface;
 use App\Service\MarkdownHelper;
 use App\Service\SlackClient;
-use Doctrine\ORM\EntityManagerInterface;
 use App\Entity\Article;
+use App\Repository\ArticleRepository;
 
 class ArticleController extends AbstractController
 {
@@ -22,21 +21,22 @@ class ArticleController extends AbstractController
     /**
      * @Route("/", name="app_homepage")
      */
-    public function homepage()
+    public function homepage(ArticleRepository $repository)
     {
-        return $this->render('articles/homepage.html.twig');
+        $articles = $repository->findAllPublishedOrderedByNewest();
+        return $this->render('articles/homepage.html.twig', [
+            'articles'=>$articles
+        ]);
     }
 
     /**
      * @Route("/news/{slug}", name="article_show")
      */
-    public function show($slug, MarkdownHelper $markdownHelper, SlackClient $slack, EntityManagerInterface $em)
+    public function show($slug, MarkdownHelper $markdownHelper, SlackClient $slack, ArticleRepository $repository)
     {
         if ($slug === 'khaaaaaan') {
             $slack->sendMessage('Khan', 'Ah, Kirk, my old friend...');
         }
-
-        $repository = $em->getRepository(Article::class);
 
         /** @var Article $article */
         $article = $repository->findOneBy(['slug' => $slug]);
