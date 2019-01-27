@@ -28,7 +28,8 @@ class ArticleAdminController extends AbstractController
         $article = new Article();
         $article->setTitle('Why Asteroids Taste Like Bacon')
                 ->setSlug('why-asteroids-taste-like-bacon-'.rand(100, 999))
-                ->setContent(<<<EOF
+                ->setContent(
+                    <<<EOF
 Spicy **jalapeno bacon** ipsum dolor amet veniam shank in dolore. Ham hock nisi landjaeger cow,
 lorem proident [beef ribs](https://baconipsum.com/) aute enim veniam ut cillum pork chuck picanha. Dolore reprehenderit
 labore minim pork belly spare ribs cupim short loin in. Elit exercitation eiusmod dolore cow
@@ -51,6 +52,10 @@ EOF
         if (rand(1, 10) > 2) {
             $article->setPublishedAt(new \DateTime(sprintf('-%d days', rand(1, 100))));
         }
+        $article->setAuthor('Mike Ferengi')
+            ->setHeartCount(rand(5, 100))
+            ->setImageFilename('asteroid.jpeg');
+
         $em->persist($article);
         $em->flush();
         return new Response(sprintf(
