@@ -1,34 +1,18 @@
 <?php
 
-namespace App\Controller;
+namespace App\DataFixtures;
 
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Component\HttpFoundation\Response;
-use Doctrine\ORM\EntityManagerInterface;
+use App\DataFixtures\BaseFixture;
+use Doctrine\Common\Persistence\ObjectManager;
 use App\Entity\Article;
 
-class ArticleAdminController extends AbstractController
+class ArticleFixtures extends BaseFixture
 {
-    /**
-     * @Route("/admin/article", name="article_admin")
-     */
-    public function index()
+    protected function loadData(ObjectManager $manager)
     {
-        return $this->render('article_admin/index.html.twig', [
-            'controller_name' => 'ArticleAdminController',
-        ]);
-    }
-
-    /**
-     * @Route("/admin/article/new")
-     */
-    public function add(EntityManagerInterface $em)
-    {
-        die('todo');
-        $article = new Article();
-        $article->setTitle('Why Asteroids Taste Like Bacon')
-                ->setSlug('why-asteroids-taste-like-bacon-'.rand(100, 999))
+        $this->createMany(Article::class, 10, function (Article $article, $count) {
+            $article->setTitle('Why Asteroids Taste Like Bacon')
+                ->setSlug('why-asteroids-taste-like-bacon-'.$count)
                 ->setContent(
                     <<<EOF
 Spicy **jalapeno bacon** ipsum dolor amet veniam shank in dolore. Ham hock nisi landjaeger cow,
@@ -49,20 +33,14 @@ cow est ribeye adipisicing. Pig hamburger pork belly enim. Do porchetta minim ca
 fugiat.
 EOF
                 );
-        // publish most articles
-        if (rand(1, 10) > 2) {
-            $article->setPublishedAt(new \DateTime(sprintf('-%d days', rand(1, 100))));
-        }
-        $article->setAuthor('Mike Ferengi')
-            ->setHeartCount(rand(5, 100))
-            ->setImageFilename('asteroid.jpeg');
-
-        $em->persist($article);
-        $em->flush();
-        return new Response(sprintf(
-            'Hiya! New Article id: #%d slug: %s',
-            $article->getId(),
-            $article->getSlug()
-        ));
+            // publish most articles
+            if (rand(1, 10) > 2) {
+                $article->setPublishedAt(new \DateTime(sprintf('-%d days', rand(1, 100))));
+            }
+            $article->setAuthor('Mike Ferengi')
+                ->setHeartCount(rand(5, 100))
+                ->setImageFilename('asteroid.jpeg');
+        });
+        $manager->flush();
     }
 }
