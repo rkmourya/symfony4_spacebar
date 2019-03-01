@@ -28,7 +28,8 @@ class CommentFixture extends BaseFixture implements DependentFixtureInterface
         $manager->flush();
     }
 
-    public function getDependencies() {
+    public function getDependencies()
+    {
         return [ArticleFixtures::class];
     }
 }
