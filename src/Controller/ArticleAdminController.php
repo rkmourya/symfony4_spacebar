@@ -7,7 +7,11 @@ use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\HttpFoundation\Response;
 use Doctrine\ORM\EntityManagerInterface;
 use App\Entity\Article;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 
+/**
+ * @IsGranted("ROLE_ADMIN")
+ */
 class ArticleAdminController extends AbstractController
 {
     /**
@@ -21,7 +25,7 @@ class ArticleAdminController extends AbstractController
     }
 
     /**
-     * @Route("/admin/article/new")
+     * @Route("/admin/article/new", name="admin_article_new")
      */
     public function add(EntityManagerInterface $em)
     {
