@@ -7,7 +7,11 @@ use Symfony\Component\Routing\Annotation\Route;
 use App\Repository\CommentRepository;
 use Symfony\Component\HttpFoundation\Request;
 use Knp\Component\Pager\PaginatorInterface;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 
+/**
+ * @IsGranted("ROLE_ADMIN")
+ */
 class CommentAdminController extends AbstractController
 {
     /**
