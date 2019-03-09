@@ -9,13 +9,11 @@ use Doctrine\ORM\EntityManagerInterface;
 use App\Entity\Article;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 
-/**
- * @IsGranted("ROLE_ADMIN_ARTICLE")
- */
 class ArticleAdminController extends AbstractController
 {
     /**
      * @Route("/admin/article", name="article_admin")
+     * @IsGranted("ROLE_ADMIN_ARTICLE")
      */
     public function index()
     {
@@ -26,6 +24,7 @@ class ArticleAdminController extends AbstractController
 
     /**
      * @Route("/admin/article/new", name="admin_article_new")
+     * @IsGranted("ROLE_ADMIN_ARTICLE")
      */
     public function add(EntityManagerInterface $em)
     {
@@ -68,5 +67,17 @@ EOF
             $article->getId(),
             $article->getSlug()
         ));
+    }
+
+    /**
+     * @Route("/admin/article/{id}/edit")
+     */
+    public function edit(Article $article)
+    {
+        if ($article->getAuthor() != $this->getUser() && !$this->isGranted('ROLE_ADMIN_ARTICLE')) {
+            throw $this->createAccessDeniedException('No access!');
+        }
+
+        dd($article);
     }
 }
