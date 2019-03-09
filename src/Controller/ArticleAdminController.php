@@ -74,7 +74,7 @@ EOF
      */
     public function edit(Article $article)
     {
-        if ($article->getAuthor() != $this->getUser() && !$this->isGranted('ROLE_ADMIN_ARTICLE')) {
+        if (!$this->isGranted('MANAGE', $article)) {
             throw $this->createAccessDeniedException('No access!');
         }
 
