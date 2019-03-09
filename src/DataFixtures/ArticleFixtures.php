@@ -26,7 +26,7 @@ class ArticleFixtures extends BaseFixture implements DependentFixtureInterface
 
     protected function loadData(ObjectManager $manager)
     {
-        $this->createMany(10, 'articles', function ($count) {
+        $this->createMany(10, 'main_articles', function ($count) {
             $article = new Article();
             $article->setTitle($this->faker->randomElement(self::$articleTitles))
                 ->setSlug($this->faker->slug)
@@ -54,7 +54,7 @@ EOF
             if ($this->faker->boolean(70)) {
                 $article->setPublishedAt($this->faker->dateTimeBetween('-100 days', '-1 days'));
             }
-            $article->setAuthor($this->faker->randomElement(self::$articleAuthors))
+            $article->setAuthor($this->getRandomReference('main_users'))
                 ->setHeartCount($this->faker->numberBetween(5, 100))
                 ->setImageFilename($this->faker->randomElement(self::$articleImages));
 
@@ -70,6 +70,7 @@ EOF
     public function getDependencies()
     {
         return [
+            UserFixture::class,
             TagFixture::class,
         ];
     }
