@@ -146,6 +146,9 @@
     "ocramius/proxy-manager": {
         "version": "2.2.2"
     },
+    "php": {
+        "version": "7.3"
+    },
     "php-http/cache-plugin": {
         "version": "1.6.0"
     },
